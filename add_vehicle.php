@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $image = '';
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $image_name = basename($_FILES['image']['name']);
-        $image_path = 'uploads/' . $image_name;  // Assuming you have an "uploads" directory
+                $image_path = 'uploads/' . $image_name;  // Assuming you have an "uploads" directory
         if (move_uploaded_file($_FILES['image']['tmp_name'], $image_path)) {
             $image = $image_path;
         } else {
@@ -53,9 +53,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = "Please fill all required fields.";
     } else {
         // Insert data into the vehicles table
-        $sql = "INSERT INTO vehicles (car_model, brand, image, rating, people_capacity, autopilot, range, fuel_type, price_per_day, book_link, is_booked) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO cars_deals (car_model, brand, image, rating, people_capacity, autopilot, range_distance, fuel_type, price_per_day, book_link, is_booked) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
         $stmt = $conn->prepare($sql);
+        
+
+
         $stmt->bind_param("sssiisdsdsi", $car_model, $brand, $image, $rating, $people_capacity, $autopilot, $range, $fuel_type, $price_per_day, $book_link, $is_booked);
 
         if ($stmt->execute()) {

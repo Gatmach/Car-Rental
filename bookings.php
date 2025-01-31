@@ -221,6 +221,13 @@ $noBookingsMessage = ($result->num_rows === 0) ? "<p>You have no bookings yet. P
             <option value="Cash">Cash</option>
             <option value="Credit Card">Credit Card</option>
         </select>
+
+
+        <select name="car_model" required>
+            <option value="M-Pesa">M-Pesa</option>
+            <option value="Cash">Cash</option>
+            <option value="Credit Card">Credit Card</option>
+        </select>
         <button type="submit">Proceed to Hire</button>
     </form>
 
