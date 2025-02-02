@@ -361,6 +361,8 @@ if ($result->num_rows === 0) {
       </div>
     </div>
   </div>
+
+  <!-- end -->
 </section>
 <div id="Mazda" class="tab__content">
   <div class="deals__card">

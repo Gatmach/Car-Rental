@@ -17,17 +17,17 @@ if ($conn->connect_error) {
 }
 
 // Fetch data from the bookings table
+// No column in the database called booking_date , amount_paid
 $sql = "SELECT 
             b.id, 
             b.username, 
             b.RID,  -- Replacing location_id with RID
-            b.booking_date, 
             b.pickup_date, 
             b.status, 
             r.location_name,  -- location_name now corresponds to RID
-            b.payment_method, 
-            b.payment_number, 
-            b.amount_paid
+            b.payment_method
+           
+           
         FROM bookings b
         JOIN rental_spots r ON b.RID = r.RID  -- Joining with rental_spots on RID instead of location_id
         WHERE b.status = 'Pending'"; // Only fetching pending bookings
@@ -63,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     exit;
 }
+
 
 $conn->close();
 ?>
@@ -167,11 +168,11 @@ $conn->close();
                     <td><?php echo $booking['id']; ?></td>
                     <td><?php echo $booking['username']; ?></td>
                     <td><?php echo $booking['location_name']; ?></td>
-                    <td><?php echo $booking['booking_date']; ?></td>
+                   
                     <td><?php echo $booking['pickup_date']; ?></td>
                     <td id="status-<?php echo $booking['id']; ?>"><?php echo $booking['status']; ?></td>
                     <td><?php echo $booking['payment_method']; ?></td>
-                    <td><?php echo $booking['amount_paid']; ?></td>
+                    
                     <td>
                         <button onclick="approveBooking(<?php echo $booking['id']; ?>)">Approve</button>
                         <button onclick="rejectBooking(<?php echo $booking['id']; ?>)">Reject</button>

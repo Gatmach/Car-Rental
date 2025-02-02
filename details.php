@@ -9,10 +9,38 @@ if (!isset($_SESSION['username'])) {
 
 // Include database connection
 include('connect.php');
+// get the car model id 
+
+$car_model_id = $_GET['car_id'];
 
 // Fetch available rental locations (for location selection)
 $locationsQuery = "SELECT * FROM rental_spots";
 $locationsResult = $conn->query($locationsQuery);
+
+function get_location_id($conn){
+
+$locationsQuery = "SELECT RID FROM rental_spots WHERE location_name = ?";
+
+// Prepare the statement
+if ($locationsStmt = $conn->prepare($locationsQuery)) {
+    // Bind the location_name parameter
+    $locationsStmt->bind_param("s", $location_name);
+    
+    // Execute the statement
+    if ($locationsStmt->execute()) {
+        // Bind the result to a variable
+        $locationsStmt->bind_result($RID);
+        
+        // Fetch the result
+    //     if ($locationsStmt->fetch()) {
+    //         // RID is now available in the $RID variable
+    //         echo "RID: " . $RID;
+    //     }
+     }
+}
+
+    return $RID;
+}
 
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -38,36 +66,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Step 1: Save the booking details in a temporary table (details table)
     $detailsQuery = "INSERT INTO details (username, location_name, pickup_date, payment_method, payment_number, credit_card_number)
-                     VALUES (?, ?, ?, ?, ?, ?)";
+                     VALUES (?, ?, ?, ?, ?,?)";
     
     if ($stmt = $conn->prepare($detailsQuery)) {
         $stmt->bind_param("ssssss", $username, $location_name, $pickup_date, $payment_method, $payment_number, $credit_card_number);
+    
 
         // Execute the query and check if successful
         if ($stmt->execute()) {
+            $RID = $stmt->insert_id;
             // Step 2: Proceed to insert the booking into the 'bookings' table
-            $bookingQuery = "INSERT INTO bookings (username, location_name, pickup_date, payment_method, payment_number, credit_card_number, is_booked)
-                             VALUES (?, ?, ?, ?, ?, ?, ?)";
-            
-            $is_booked = 1; // Assume the booking is confirmed after submission
+              $is_booked = 1; // Assume the booking is confirmed after submission
+            $bookingQuery = "INSERT INTO bookings (username, location_name, pickup_date, payment_method,detail_id_location,RID,car_model, is_booked)
+                             VALUES (?, ?, ?, ?, ?, ?, ?,?)";
 
+                $location_RID = get_location_id($conn);
+            
             if ($bookingStmt = $conn->prepare($bookingQuery)) {
-                $bookingStmt->bind_param("sssssss", $username, $location_name, $pickup_date, $payment_method, $payment_number, $credit_card_number, $is_booked);
+                $bookingStmt->bind_param("ssssiisi", $username, $location_name, $pickup_date, $payment_method, $RID,$location_RID, $car_model_id, $is_booked);
                 if ($bookingStmt->execute()) {
-                    echo "<script>alert('Booking successfully made!'); window.location.href = 'cars_deals.php';</script>";
+                    echo "<script>alert('Booking successfully made!'); window.location.href = 'bookings.php';</script>";
                 } else {
+                   
                     echo "<script>alert('Error occurred while processing your booking. Please try again later.'); window.location.href = 'bookings.php';</script>";
                 }
                 $bookingStmt->close();
             } else {
-                echo "<script>alert('Error preparing the booking query.'); window.location.href = 'bookings.php';</script>";
+                print_r($conn->error);
+
+                
+               
+                 echo "<script>alert('Error preparing the booking query.'); window.location.href = 'bookings.php';</script>";
             }
         } else {
             echo "<script>alert('Error occurred while saving your details. Please try again later.'); window.location.href = 'bookings.php';</script>";
         }
         $stmt->close();
     } else {
-        echo "<script>alert('Error preparing the details query.'); window.location.href = 'bookings.php';</script>";
+
+         echo "<script>alert('Error preparing the details query.'); window.location.href = 'bookings.php';</script>";
     }
 
     $conn->close();
@@ -152,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <div class="container">
     <h2>Book Your Rental</h2>
 
-    <form action="bookings.php" method="POST">
+    <form  method="POST">
         <label for="location">Select Location</label>
         <select name="location_name" id="location" required>
             <?php
@@ -176,8 +213,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <label for="payment_number" id="payment_number_label" style="display: none;">Enter Payment Number (for M-Pesa)</label>
         <input type="text" id="payment_number" name="payment_number" placeholder="Enter payment number" style="display: none;">
 
-        <label for="credit_card_number" id="credit_card_label" style="display: none;">Enter Credit Card Number</label>
-        <input type="text" id="credit_card_number" name="credit_card_number" placeholder="Enter credit card number" style="display: none;">
+        <label for="credit_card_number" id="credit_card_label" >Enter Credit Card Number</label>
+        <input type="text" id="credit_card_number" name="credit_card_number" placeholder="Enter credit card number">
 
         <button type="submit" class="button">Proceed to Hire</button>
     </form>

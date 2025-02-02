@@ -16,34 +16,40 @@ $locationsResult = $conn->query($locationsQuery);
 $errorMessage = '';
 $successMessage = '';
 
-// Handle booking submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $location_name = $_POST['location_name'];
-    $pickup_date = $_POST['pickup_date'];
-    $payment_method = $_POST['payment_method'];
+// Fetching car deals from database
 
-    // Sanitize and validate inputs
-    if (empty($location_name) || empty($pickup_date) || empty($payment_method)) {
-        $errorMessage = "Please fill all required fields.";
-    } else {
-        // Validate the date format for the pickup date (optional)
-        $pickup_date_timestamp = strtotime($pickup_date);
-        if ($pickup_date_timestamp === false) {
-            $errorMessage = "Invalid pickup date.";
-        } else {
-            // Insert into database
-            $query = "INSERT INTO bookings (username, location_name, pickup_date, payment_method) VALUES (?, ?, ?, ?)";
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param("ssss", $username, $location_name, $pickup_date, $payment_method);
-            if ($stmt->execute()) {
-                $successMessage = "Booking successfully made!";
-            } else {
-                $errorMessage = "Error making booking: " . $stmt->error;
-            }
-            $stmt->close();
-        }
-    }
-}
+
+// print_r($_GET['car_id']);
+
+
+// Handle booking submission
+// if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+//     $location_name = $_POST['location_name'];
+//     $pickup_date = $_POST['pickup_date'];
+//     $payment_method = $_POST['payment_method'];
+
+//     // Sanitize and validate inputs
+//     if (empty($location_name) || empty($pickup_date) || empty($payment_method)) {
+//         $errorMessage = "Please fill all required fields.";
+//     } else {
+//         // Validate the date format for the pickup date (optional)
+//         $pickup_date_timestamp = strtotime($pickup_date);
+//         if ($pickup_date_timestamp === false) {
+//             $errorMessage = "Invalid pickup date.";
+//         } else {
+//             // Insert into database
+//             $query = "INSERT INTO bookings (username, location_name, pickup_date, payment_method) VALUES (?, ?, ?, ?)";
+//             $stmt = $conn->prepare($query);
+//             $stmt->bind_param("ssss", $username, $location_name, $pickup_date, $payment_method);
+//             if ($stmt->execute()) {
+//                 $successMessage = "Booking successfully made!";
+//             } else {
+//                 $errorMessage = "Error making booking: " . $stmt->error;
+//             }
+//             $stmt->close();
+//         }
+//     }
+// }
 
 // Handle booking cancellation
 if (isset($_GET['cancel_booking_id']) && is_numeric($_GET['cancel_booking_id'])) {
@@ -208,7 +214,7 @@ $noBookingsMessage = ($result->num_rows === 0) ? "<p>You have no bookings yet. P
     <?php if (!empty($successMessage)) echo "<p style='color:green;'>$successMessage</p>"; ?>
     <?php if (!empty($errorMessage)) echo "<p style='color:red;'>$errorMessage</p>"; ?>
 
-    <form method="POST">
+    <!-- <form method="POST">
         <select name="location_name" required>
             <option value="">Select Location</option>
             <?php while ($row = $locationsResult->fetch_assoc()) {
@@ -229,7 +235,7 @@ $noBookingsMessage = ($result->num_rows === 0) ? "<p>You have no bookings yet. P
             <option value="Credit Card">Credit Card</option>
         </select>
         <button type="submit">Proceed to Hire</button>
-    </form>
+    </form> -->
 
     <h2 class="section_header">Your Bookings</h2>
     <?php if ($noBookingsMessage): ?>
