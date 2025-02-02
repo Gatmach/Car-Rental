@@ -19,7 +19,7 @@ if ($conn->connect_error) {
 // Handle approval request
 if (isset($_POST['approve'])) {
     $bookingId = $_POST['booking_id']; // Get the booking ID from the form submission
-    $updateSql = "UPDATE bookings SET status = 'Approved' WHERE id = ?";
+    $updateSql = "UPDATE bookings SET status = 'confirmed' WHERE id = ?";
     
     $stmt = $conn->prepare($updateSql);
     $stmt->bind_param('i', $bookingId); // Bind the booking ID as an integer
@@ -34,10 +34,15 @@ if (isset($_POST['approve'])) {
 }
 
 // Query to fetch approved booking data from the database
-$sql = "SELECT id, car_model, username, location_name, booking_date, pickup_date, status, payment_method, amount_paid FROM bookings WHERE status = 'Approved'";
+// No column in the database called booking_date , amount_paid
 
+// $sql = "SELECT id, car_model, username, location_name, booking_date, pickup_date, status, payment_method, amount_paid FROM bookings WHERE status = 'Approved'";
+
+// the correct query to the database .....
+$sql = "SELECT id, car_model, username, location_name, pickup_date, status, payment_method FROM bookings WHERE status = 'confirmed'";
 // Execute the query
 $result = $conn->query($sql);
+print_r($conn->error);
 
 // Check if there are results
 if ($result->num_rows > 0) {
@@ -184,11 +189,11 @@ $conn->close();
                         <td><?php echo htmlspecialchars($booking['car_model']); ?></td>
                         <td><?php echo htmlspecialchars($booking['username']); ?></td>
                         <td><?php echo htmlspecialchars($booking['location_name']); ?></td>
-                        <td><?php echo htmlspecialchars($booking['booking_date']); ?></td>
+                       <!--  <td><?php echo htmlspecialchars($booking['booking_date']); ?></td> -->
                         <td><?php echo htmlspecialchars($booking['pickup_date']); ?></td>
                         <td><?php echo htmlspecialchars($booking['status']); ?></td>
                         <td><?php echo htmlspecialchars($booking['payment_method']); ?></td>
-                        <td><?php echo htmlspecialchars($booking['amount_paid']); ?></td>
+                        <!-- <td><?php echo htmlspecialchars($booking['amount_paid']); ?></td> -->
                         <td>
                             <!-- Approval Button -->
                             <?php if ($booking['status'] !== 'Approved'): ?>

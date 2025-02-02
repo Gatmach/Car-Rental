@@ -315,7 +315,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_booking'])) {
             <ul class="nav__links" id="nav-links">
                 <li><a href="#home">Home</a></li>
                 <li><a href="details.php"> YOUR DETAILS</a></li>
-                <li><a href="cars_deals.php">CARS</a></li>
+                <li><a href="car_deals_booking.php">CARS</a></li>
                 <li><a href="bookings.php">BOOKINGS</a></li>
                 <li><a href="contact.php">CONTACT</a></li>
                 <?php if (isset($_SESSION['user_id'])): ?>
